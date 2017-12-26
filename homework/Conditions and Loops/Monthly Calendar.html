@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monthly Calendar</title>
+    <style>
+        .prev-month, .next-month { color: #CCC }
+        .today { font-weight: bold; background: #DDD; }
+        .title { background: #AAAAFF; margin: 10px 0; padding:5px }
+        table { border: 1px solid #CCC;}
+        td { text-align: center; }
+        #calendarCode { width: 100%; }
+    </style>
+    <script>
+        function calendar([day, month, year]) {
+            let date = new Date(year,month-1,day);
+            let html = '';
+
+            html += `<table>\n`;
+            html += `  <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>\n`;
+
+            //print the days of the previous month
+            let firstDayOfMonthDate = new Date(year,month-1,1);
+            let firstDayOfMonth = firstDayOfMonthDate.getDay();
+            html += `  <tr>`;
+            let week = 0;
+            if (firstDayOfMonth != 7) {
+                let lastDayOfPreviousMonth = new Date(firstDayOfMonthDate - 1).getDate();
+                for (let i = Number(firstDayOfMonth); i > 0; i--) {
+                    let theDay = Number(lastDayOfPreviousMonth - i + 1);
+                    html += `<td class="prev-month">${theDay}</td>`;
+                    ++week;
+                }
+            }
+
+            //print the days of the current month
+            let nextYear = 0;
+            let nextMonth = 0;
+            if (month == 12) {
+                nextYear = Number(year) + 1;
+                nextMonth = 1;
+            } else {
+                nextYear = Number(year);
+                nextMonth = Number(month) + 1;
+            }
+            let nextMonthDate = new Date(nextYear,nextMonth-1,1);
+            let lastDayOfCurrentMonth = new Date(nextMonthDate - 1).getDate();
+            let today = '';
+            for (let i = 1; i <= lastDayOfCurrentMonth; i++) {
+                if (day == i)
+                    today = ' class="today"';
+                else today = '';
+                ++week;
+                html += `<td${today}>${Number(i)}</td>`;
+                if (week == 7) {
+                    if (i < lastDayOfCurrentMonth) {
+                        html += `</tr>\n  <tr>`;
+                        week = 0;
+                    } else {
+                        html += `</tr>\n`;
+                    }
+                }
+            }
+
+            //print the days of the next month
+            if (week < 7) {
+                let daysLeft = 7 - week;
+                for (let i = 1; i <= daysLeft; i++) {
+                    html += `<td class="next-month">${Number(i)}</td>`;
+                }
+                html += `</tr>\n`;
+            }
+
+            html += `</table>`;
+            console.log(html);
+            return html;
+        }
+    </script>
+</head>
+
+<body>
+Day: <input id="day" type="number" value="4" />
+Month: <input id="month" type="number" value="9" />
+Year: <input id="year" type="number" value="2016" />
+<input type="button" value="Show"
+       onclick="let calendarHTML =
+            calendar([document.getElementById('day').value,
+                document.getElementById('month').value,
+                document.getElementById('year').value]);
+            document.getElementById('calendar').innerHTML = calendarHTML;
+            document.getElementById('calendarCode').innerText = calendarHTML" />
+<div class="title">Calendar:</div>
+<div id="calendar">Calendar will be shown here</div>
+<div class="title">HTML:</div>
+<textarea rows="12" id="calendarCode"></textarea>
+</body>
+
+</html>
